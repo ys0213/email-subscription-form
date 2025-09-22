@@ -20,9 +20,12 @@ const EmailSubscriptionForm: React.FC = () => {
   });
 
   // EmailJS configuration - Replace these with your actual values
-  const EMAILJS_SERVICE_ID = process.env.REACT_APP_EMAILJS_SERVICE_ID || 'your_service_id';
-  const EMAILJS_TEMPLATE_ID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID || 'your_template_id';
-  const EMAILJS_PUBLIC_KEY = process.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'your_public_key';
+  const EMAILJS_SERVICE_ID = process.env.REACT_APP_EMAILJS_SERVICE_ID || 'service_qha2pqh';
+  const EMAILJS_TEMPLATE_ID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID || 'template_2omrtbs';
+  const EMAILJS_PUBLIC_KEY = process.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'XSArlkEJ9HQzbR3Tc';
+  
+  // Demo mode - set to true for portfolio demo
+  const DEMO_MODE = process.env.REACT_APP_DEMO_MODE === 'true';
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -55,6 +58,22 @@ const EmailSubscriptionForm: React.FC = () => {
     setFormState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
+      if (DEMO_MODE) {
+        // Demo mode - simulate email sending
+        console.log('Demo mode: Simulating email send to:', formData.email);
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
+        
+        setFormState({
+          isLoading: false,
+          isSubmitted: true,
+          error: null
+        });
+        
+        // Reset form
+        setFormData({ email: '' });
+        return;
+      }
+
       // Initialize EmailJS with your public key
       emailjs.init(EMAILJS_PUBLIC_KEY);
 
@@ -105,7 +124,10 @@ const EmailSubscriptionForm: React.FC = () => {
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Successfully Subscribed!</h3>
           <p className="text-gray-600 mb-4">
-            Thank you for subscribing! You'll receive our latest updates.
+            {DEMO_MODE 
+              ? "Demo mode: Email subscription simulated successfully!" 
+              : "Thank you for subscribing! You'll receive our latest updates."
+            }
           </p>
           <button
             onClick={() => setFormState(prev => ({ ...prev, isSubmitted: false }))}
